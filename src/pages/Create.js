@@ -1,9 +1,38 @@
+import { useState } from "react";
+import supabase from "../config/supabaseClient";
+import { useNavigate } from "react-router-dom";
+
 const Create = () => {
+  const navigate = useNavigate()
   const[title, setTitle] = useState('')
   const[method, setMethod] = useState('')
   const[rating, setRating] = useState('')
   const[formError, setFormError] = useState(null)
 
+  const handleSubmit = async (e) =>{
+    e.preventDefault()
+
+    if(!title || !method || !rating){
+      setFormError('Please fill all fields')
+      return
+    }
+    const {data, error} = await supabase
+    .from('smoothies')
+    .insert([{title, method, rating}])
+
+    if(error){
+      console.log(error)
+      setFormError('Please fill all fields')
+    }
+    if(data){
+      console.log(data)
+      setFormError(null)
+      navigate('/')
+    }
+
+    console.log(title,rating,method)
+
+  }
 
   return (
     <div className="page create">
@@ -28,7 +57,7 @@ const Create = () => {
           type="number"
           id="rating"
           value={rating}
-          onChange={(e)=> setMethod(e.target.value)}
+          onChange={(e)=> setRating(e.target.value)}
           />
 
           <button>Create Smoothie Recipe</button>
